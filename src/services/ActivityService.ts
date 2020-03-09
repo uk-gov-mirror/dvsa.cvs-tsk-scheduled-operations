@@ -50,6 +50,40 @@ class ActivityService {
         return activityResults;
       }) as Promise<IActivity[]>;
   }
+
+  public endActivities(activities: IActivity[]) {
+    activities.forEach((activity: IActivity) => {
+      this.endActivity(activity.id);
+    });
+  }
+
+  /**
+   *  Closes Activities based on the provided id
+   * @param params - getActivities query parameters
+   */
+  private endActivity(id: string): Promise<any> {
+    const config: IInvokeConfig = this.config.getInvokeConfig();
+    const invokeParams: any = {
+      FunctionName: config.functions.activities.name,
+      InvocationType: "RequestResponse",
+      LogType: "Tail",
+      Payload: JSON.stringify({
+        httpMethod: "PUT",
+        path: `/activities/${id}/end`,
+        pathParameters:  {
+          id
+        }
+      }),
+    };
+    return this.lambdaClient.invoke(invokeParams)
+      .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
+        const payload: any = validateInvocationResponse(response); // Response validation
+        const activityResults: any[] = JSON.parse(payload.body); // Response conversion
+        return activityResults;
+      });
+  }
+
+
 }
 
 export { ActivityService };

@@ -6,23 +6,26 @@ import {
   getActionableStaffIdsByTime,
   getLastEventTimeByTesterStaffId,
   getMostRecentActivityByTesterStaffId,
-  getMostRecentTestResultByTesterStaffId,
-  getStaleOpenVisits, getTesterEmailsFromTestResults,
+  getMostRecentTestResultByTesterStaffId, getOpenVisitsToClose,
+  getStaleOpenVisits, getTesterDetailsFromTestResults,
   getTesterStaffIds,
   removeFromMap
 } from "../utils/helpers";
-import {IActivity, ITestResult} from "../models";
+import {IActivity, ITesterDetails, ITestResult} from "../models";
 import {TIMES} from "../utils/Enums";
+import {NotificationService} from "./NotificationService";
 
 
 export class CleanupService {
   private lambdaService: LambdaService;
   private activityService: ActivityService;
   private testResultsService: TestResultsService;
-  constructor() {
+  private notificationService: NotificationService;
+  constructor(notifyService: NotificationService) {
     this.lambdaService = new LambdaService(new Lambda());
     this.activityService = new ActivityService(this.lambdaService);
     this.testResultsService = new TestResultsService(this.lambdaService);
+    this.notificationService = notifyService;
   }
   /**
    *
@@ -45,20 +48,20 @@ export class CleanupService {
     // Get the time of the most recent logged event, of either type taken by each tester
     const lastActionTimes: Map<string, Date> = getLastEventTimeByTesterStaffId(mostRecentActivities, mostRecentTestResults, openVisitStaffIds);
 
+    // Get list of staff visits to close;
     const testersToCloseVisits: string[] = getActionableStaffIdsByTime(lastActionTimes,TIMES.TERMINATION_TIME);
-    // Get lists of staff to action;
+    // Filter out closable visits
     const filteredLastActions: Map<string, Date> = removeFromMap(lastActionTimes, testersToCloseVisits);
-    const testersToNotify: string[] = getActionableStaffIdsByTime(lastActionTimes, TIMES.NOTIFICATION_TIME);
+    // Get list of staff members to notify;
+    const testersToNotify: string[] = getActionableStaffIdsByTime(filteredLastActions, TIMES.NOTIFICATION_TIME);
 
-    const emailsToNotify: string[] = getTesterEmailsFromTestResults(testResults, testersToNotify);
+    // Send notifications
+    const userDetails: ITesterDetails[] = getTesterDetailsFromTestResults(testResults, testersToNotify);
+    this.notificationService.sendVisitExpiryNotifications(userDetails);
 
-
-    // For Each
-      // find last event
-      // If over notification timeout
-        // send email
-      // If over kill timeout
-        // close activity
+    // Close visits
+    const closingActivityDetails = getOpenVisitsToClose(openVisits, testersToCloseVisits);
+    this.activityService.endActivities(closingActivityDetails);
 
     return Promise.resolve();
   }

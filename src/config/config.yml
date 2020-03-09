@@ -17,3 +17,5 @@ endpoints:
         name: test-results-${BRANCH}
       activities:
         name: activities-${BRANCH}
+notify:
+  api_key:

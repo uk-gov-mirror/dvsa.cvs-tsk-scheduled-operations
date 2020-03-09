@@ -8,5 +8,10 @@ export enum HTTPRESPONSE {
 }
 
 export enum ERRORS {
-  NO_BRANCH = "'BRANCH' environment variable not found"
+  NO_BRANCH = "'BRANCH' environment variable not found",
+  NOTIFY_CONFIG_NOT_DEFINED = "The Notify config is not defined in the config file.",
+}
+
+export enum TEMPLATE_IDS {
+  TESTER_VISIT_EXPIRY= "72eac307-d001-4b13-9fde-9f26c631da68"
 }

@@ -1,4 +1,4 @@
-import {IActivity, ITestResult} from "../models";
+import {IActivity, ITesterDetails, ITestResult} from "../models";
 import {uniq, max, maxBy} from "lodash";
 import dateFns from "date-fns";
 import {TIMES} from "./Enums";
@@ -74,11 +74,20 @@ export const removeFromMap = (map: Map<string, any>, removeIds: string[]): Map<s
   return newMap;
 };
 
-export const getTesterEmailsFromTestResults = (testResults: Map<string,ITestResult[]>, staffIds: string[]): string[] => {
-  const emails: string[] = [];
+export const getTesterDetailsFromTestResults = (testResults: Map<string,ITestResult[]>, staffIds: string[]): ITesterDetails[] => {
+  const details: ITesterDetails[] = [];
   staffIds.forEach((id) => {
     const email = testResults.get(id)?.[0].testerEmailAddress;
-    if (email) {emails.push(email);}
+    if (email) {details.push({email});}
   });
-  return emails;
+  return details;
+};
+
+/**
+ * Takes a list of stale open visits
+ * @param openVisitList
+ * @param testerIds
+ */
+export const getOpenVisitsToClose = (openVisitList: IActivity[], testerIds: string[]) => {
+  return openVisitList.filter((visit) => testerIds.includes(visit.testerStaffId));
 };

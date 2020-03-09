@@ -24,12 +24,6 @@ interface IActivity {
   notes?: string;
 }
 
-interface IActivitiesList {
-  startTime: string;
-  activityType: string;
-  activity: IActivity;
-}
-
 export interface ITestResult {
   testResultId: string;
   systemNumber: string;
@@ -87,4 +81,18 @@ interface IInvokeConfig {
   functions: { testResults: { name: string }, activities: { name: string } };
 }
 
-export { IActivityParams, IActivity, IInvokeConfig, IActivitiesList, IFunctionEvent };
+interface INotifyConfig {
+  api_key: string;
+}
+
+interface ISecretConfig {
+  notify: {
+    api_key: string
+  };
+}
+
+interface ITesterDetails {
+  email: string;
+}
+
+export { IActivityParams, IActivity, IInvokeConfig, IFunctionEvent, INotifyConfig, ISecretConfig, ITesterDetails };

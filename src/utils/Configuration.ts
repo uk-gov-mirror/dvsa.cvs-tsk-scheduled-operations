@@ -1,8 +1,10 @@
 // @ts-ignore
 import * as yml from "node-yaml";
 import { Handler } from "aws-lambda";
-import {IFunctionEvent, IInvokeConfig} from "../models";
+import {IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig} from "../models";
 import {ERRORS} from "./Enums";
+import {GetSecretValueRequest, GetSecretValueResponse} from "aws-sdk/clients/secretsmanager";
+import { safeLoad } from "js-yaml";
 
 class Configuration {
 
@@ -73,6 +75,21 @@ class Configuration {
   }
 
   /**
+   * Retrieves the MOT config
+   * @returns INotifyConfig
+   */
+  public async getNotifyConfig(): Promise<INotifyConfig> {
+    if (!this.config.notify) {
+      throw new Error(ERRORS.NOTIFY_CONFIG_NOT_DEFINED);
+    }
+    if (!this.config.notify.api_key) {
+      await this.setSecrets();
+    }
+
+    return this.config.notify;
+  }
+
+  /**
    * Retrieves the Lambda Invoke config
    * @returns IInvokeConfig
    */
@@ -87,6 +104,37 @@ class Configuration {
     return this.config.invoke[env];
   }
 
+  /**
+   * Sets the secrets needed to use GovNotify
+   * @returns Promise<void>
+   */
+  private async setSecrets(): Promise<void> {
+    let secretConfig: ISecretConfig;
+
+    if (process.env.SECRET_NAME) {
+      const req: GetSecretValueRequest = {
+        SecretId: process.env.SECRET_NAME
+      };
+      const resp: GetSecretValueResponse = await this.secretsClient.getSecretValue(req).promise();
+      try {
+        secretConfig = safeLoad(resp.SecretString as string);
+      } catch (e) {
+        throw new Error("SecretString is empty.");
+      }
+    } else {
+      console.warn(ERRORS.SECRET_ENV_VAR_NOT_EXIST);
+      try {
+        secretConfig = await yml.read(this.secretPath);
+      } catch (err) {
+        throw new Error(ERRORS.SECRET_FILE_NOT_EXIST);
+      }
+    }
+    try {
+      this.config.notify.api_key = secretConfig.notify.api_key;
+    } catch (e) {
+      throw new Error("secretConfig not set");
+    }
+  }
 }
 
 export { Configuration };

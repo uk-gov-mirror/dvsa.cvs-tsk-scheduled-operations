@@ -1,7 +1,11 @@
-import {CleanupService} from "../services/cleanupService";
+import {CleanupService} from "../services/CleanupService";
 import HTTPError from "../models/HTTPError";
 import HTTPResponse from "../models/HTTPResponse";
 import {ISubSeg} from "../models/ISubSeg";
+// @ts-ignore
+import { NotifyClient } from "notifications-node-client";
+import {NotificationService} from "../services/NotificationService";
+import {Configuration} from "../utils/Configuration";
 
 /* workaround AWSXRay.captureAWS(...) call obscures types provided by the AWS sdk.
 https://github.com/aws/aws-xray-sdk-node/issues/14
@@ -24,7 +28,10 @@ export const cleanupVisit = async () => {
     if (segment) {
       subseg = segment.addNewSubsegment("cleanupVisits");
     }}
-  const cleanupService = new CleanupService();
+  const notifyConfig = await Configuration.getInstance().getNotifyConfig();
+  const notifyClient = new NotifyClient(notifyConfig.api_key);
+  const notifyService: NotificationService = new NotificationService(notifyClient);
+  const cleanupService = new CleanupService(notifyService);
 
 
   try {
