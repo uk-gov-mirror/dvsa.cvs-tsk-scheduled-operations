@@ -1,0 +1,19 @@
+functions:
+- cleanupVisits:
+    path: /cleanupVisits
+    function: cleanupVisits
+    eventName: 'cleanup'
+
+serverless:
+  basePath: /${BRANCH}
+  port: 3006
+
+endpoints:
+  remote:
+    params:
+      apiVersion: '2015-03-31'
+    functions:
+      testResults:
+        name: test-results-${BRANCH}
+      activities:
+        name: activities-${BRANCH}

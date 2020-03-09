@@ -1,0 +1,36 @@
+service: cvs-tsk-scheduled-operations
+
+openapi: 3.0.0
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  tracing: true # enable tracing
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-openapi-documentation
+  - serverless-plugin-tracing
+  - serverless-plugin-typescript
+
+functions:
+  cleanupVisits:
+    handler: src/handler.handler
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - 'aws.events'
+            detail-type:
+              - 'Scheduled Event'
+            detail:
+              task:
+                - 'cleanup'
