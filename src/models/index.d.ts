@@ -12,11 +12,12 @@ interface IActivityParams {
 interface IActivity {
   id: string;
   activityType: string;
-  testStationName: string;
-  testStationPNumber: string;
-  testStationEmail: string;
-  testStationType: string;
+  testStationName?: string;
+  testStationPNumber?: string;
+  testStationEmail?: string;
+  testStationType?: string;
   testerName: string;
+  testerEmailAddress: string;
   testerStaffId: string;
   startTime: string;
   endTime: string | null;
@@ -28,9 +29,9 @@ export interface ITestResult {
   testResultId: string;
   systemNumber: string;
   testerStaffId: string;
-  testStartTimestamp: Date;
+  testStartTimestamp: string;
   odometerReadingUnits: string;
-  testEndTimestamp: Date;
+  testEndTimestamp: string;
   testStatus: string;
   testTypes: any[];
   vehicleClass: VehicleClass;
@@ -95,4 +96,14 @@ interface ITesterDetails {
   email: string;
 }
 
-export { IActivityParams, IActivity, IInvokeConfig, IFunctionEvent, INotifyConfig, ISecretConfig, ITesterDetails };
+interface IIndexInvokeConfig {
+  [key: string]: IInvokeConfig;
+}
+
+interface IConfig {
+  notify: INotifyConfig;
+  invoke: IIndexInvokeConfig;
+  functions: any
+}
+
+export { IActivityParams, IActivity, IInvokeConfig, IFunctionEvent, INotifyConfig, ISecretConfig, ITesterDetails, IConfig };

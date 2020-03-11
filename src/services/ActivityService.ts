@@ -2,16 +2,14 @@ import { PromiseResult } from "aws-sdk/lib/request";
 import { AWSError, Lambda } from "aws-sdk";
 import { LambdaService } from "./LambdaService";
 import { Configuration } from "../utils/Configuration";
-import dateFns from "date-fns";
+import {subHours} from "date-fns";
 import {TIMES} from "../utils/Enums";
-import {uniq} from "lodash";
 import {IActivity, IActivityParams, IInvokeConfig} from "../models";
 import {validateInvocationResponse} from "../utils/validateInvocationResponse";
 
 class ActivityService {
   private readonly lambdaClient: LambdaService;
   private readonly config: Configuration;
-  private activities: IActivity[] | undefined;
 
   constructor(lambdaClient: LambdaService) {
     this.lambdaClient = lambdaClient;
@@ -21,7 +19,7 @@ class ActivityService {
   public async getRecentActivities(): Promise<IActivity[]> {
     // Get unclosed Visit activities from the last period of interest
     const params = {
-      fromStartTime: dateFns.subHours(new Date(), TIMES.TERMINATION_TIME + 1).toISOString(),
+      fromStartTime: subHours(new Date(), TIMES.TERMINATION_TIME + 1).toISOString(),
     };
 
     return await this.getActivities(params);
@@ -59,7 +57,7 @@ class ActivityService {
 
   /**
    *  Closes Activities based on the provided id
-   * @param params - getActivities query parameters
+   * @param id - the activity id
    */
   private endActivity(id: string): Promise<any> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
@@ -75,6 +73,7 @@ class ActivityService {
         }
       }),
     };
+    console.log("Ending activity: ", id);
     return this.lambdaClient.invoke(invokeParams)
       .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
         const payload: any = validateInvocationResponse(response); // Response validation

@@ -6,8 +6,8 @@ import {
   getActionableStaffIdsByTime,
   getLastEventTimeByTesterStaffId,
   getMostRecentActivityByTesterStaffId,
-  getMostRecentTestResultByTesterStaffId, getOpenVisitsToClose,
-  getStaleOpenVisits, getTesterDetailsFromTestResults,
+  getMostRecentTestResultByTesterStaffId, filterActivitiesByStaffId,
+  getStaleOpenVisits, getTesterDetailsFromActivities,
   getTesterStaffIds,
   removeFromMap
 } from "../utils/helpers";
@@ -56,11 +56,11 @@ export class CleanupService {
     const testersToNotify: string[] = getActionableStaffIdsByTime(filteredLastActions, TIMES.NOTIFICATION_TIME);
 
     // Send notifications
-    const userDetails: ITesterDetails[] = getTesterDetailsFromTestResults(testResults, testersToNotify);
+    const userDetails: ITesterDetails[] = getTesterDetailsFromActivities(openVisits, testersToNotify);
     this.notificationService.sendVisitExpiryNotifications(userDetails);
 
     // Close visits
-    const closingActivityDetails = getOpenVisitsToClose(openVisits, testersToCloseVisits);
+    const closingActivityDetails = filterActivitiesByStaffId(openVisits, testersToCloseVisits);
     this.activityService.endActivities(closingActivityDetails);
 
     return Promise.resolve();

@@ -7,7 +7,6 @@ module.exports = {
     ],
     setupFiles: [
         'jest-plugin-context/setup',
-        "<rootDir>/jest-cucumber-config"
     ],
     moduleFileExtensions: ['js', 'ts'],
     testResultsProcessor: 'jest-sonar-reporter',

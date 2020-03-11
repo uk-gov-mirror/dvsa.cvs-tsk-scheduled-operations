@@ -1,27 +1,29 @@
 // @ts-ignore
 import * as yml from "node-yaml";
 import { Handler } from "aws-lambda";
-import {IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig} from "../models";
+import {IConfig, IFunctionEvent, IInvokeConfig, INotifyConfig, ISecretConfig} from "../models";
 import {ERRORS} from "./Enums";
-import {GetSecretValueRequest, GetSecretValueResponse} from "aws-sdk/clients/secretsmanager";
+import SecretsManager, { GetSecretValueRequest, GetSecretValueResponse } from "aws-sdk/clients/secretsmanager";
 import { safeLoad } from "js-yaml";
+import * as AWSXray from "aws-xray-sdk";
 
 class Configuration {
 
   private static instance: Configuration;
-  private readonly config: any;
+  private readonly config: IConfig;
+  private secretsClient: SecretsManager;
 
-  constructor(configPath: string) {
-    if (!process.env.BRANCH) { throw new Error(ERRORS.NO_BRANCH); }
+  private constructor(configPath: string) {
+    // @ts-ignore
+    this.secretsClient = AWSXray.captureAWSClient(new SecretsManager({ region: "eu-west-1" }));
     this.config = yml.readSync(configPath);
-
     // Replace environment variable references
     let stringifiedConfig: string = JSON.stringify(this.config);
     const envRegex: RegExp = /\${(\w+\b):?(\w+\b)?}/g;
     const matches: RegExpMatchArray | null = stringifiedConfig.match(envRegex);
 
     if (matches) {
-      matches.forEach((match) => {
+      matches.forEach((match: string) => {
         envRegex.lastIndex = 0;
         const captureGroups: RegExpExecArray = envRegex.exec(match) as RegExpExecArray;
 
@@ -105,35 +107,25 @@ class Configuration {
   }
 
   /**
-   * Sets the secrets needed to use GovNotify
-   * @returns Promise<void>
+   * Reads the secret yaml file from SecretManager or local file.
    */
-  private async setSecrets(): Promise<void> {
-    let secretConfig: ISecretConfig;
-
+  private async setSecrets(): Promise<IConfig> {
+    let secret: IConfig;
     if (process.env.SECRET_NAME) {
       const req: GetSecretValueRequest = {
         SecretId: process.env.SECRET_NAME
       };
       const resp: GetSecretValueResponse = await this.secretsClient.getSecretValue(req).promise();
       try {
-        secretConfig = safeLoad(resp.SecretString as string);
+        secret = await safeLoad(resp.SecretString as string);
       } catch (e) {
         throw new Error("SecretString is empty.");
       }
     } else {
-      console.warn(ERRORS.SECRET_ENV_VAR_NOT_EXIST);
-      try {
-        secretConfig = await yml.read(this.secretPath);
-      } catch (err) {
-        throw new Error(ERRORS.SECRET_FILE_NOT_EXIST);
-      }
+      console.warn(ERRORS.SECRET_ENV_VAR_NOT_SET);
+      throw new Error(ERRORS.SECRET_ENV_VAR_NOT_SET);
     }
-    try {
-      this.config.notify.api_key = secretConfig.notify.api_key;
-    } catch (e) {
-      throw new Error("secretConfig not set");
-    }
+    return secret;
   }
 }
 

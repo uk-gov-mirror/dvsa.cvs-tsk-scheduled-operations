@@ -18,14 +18,14 @@ class NotificationService {
    * @param userDetails
    */
   public sendVisitExpiryNotifications(userDetails: ITesterDetails[]) {
-    userDetails.forEach(async (email) => {
+    userDetails.forEach(async ({email}) => {
       const params = {
         email,
         personalisation: {
         }
       };
-
-      this.sendNotification(params);
+      console.log("Sending visit expiry email to: ", email);
+      // this.sendNotification(params);
     });
   }
 
@@ -34,7 +34,6 @@ class NotificationService {
    * @param params - personalization details and email
    */
   private sendNotification(params: any) {
-    // console.log(`Sent email using ${TEMPLATE_IDS.TESTER_VISIT_EXPIRY} templateId, ${notifyPartialParams.personalisation.test_type_name} test type name and ${notifyPartialParams.personalisation.date_of_issue} date of issue`);
     return this.notifyClient.sendEmail(TEMPLATE_IDS.TESTER_VISIT_EXPIRY, params.email, params.personalisation)
       .then((response: any) => {
         return response;
