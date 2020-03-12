@@ -6,6 +6,7 @@ import {subHours} from "date-fns";
 import {TIMES} from "../utils/Enums";
 import {IActivity, IActivityParams, IInvokeConfig} from "../models";
 import {validateInvocationResponse} from "../utils/validateInvocationResponse";
+import HTTPError from "../models/HTTPError";
 
 class ActivityService {
   private readonly lambdaClient: LambdaService;
@@ -29,7 +30,7 @@ class ActivityService {
    * Retrieves Activities based on the provided parameters
    * @param params - getActivities query parameters
    */
-  public getActivities(params: IActivityParams): Promise<IActivity[]> {
+  public async getActivities(params: IActivityParams): Promise<IActivity[]> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: any = {
       FunctionName: config.functions.activities.name,
@@ -41,25 +42,28 @@ class ActivityService {
         queryStringParameters: params
       }),
     };
-    return this.lambdaClient.invoke(invokeParams)
+    return await this.lambdaClient.invoke(invokeParams)
       .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
         const payload: any = validateInvocationResponse(response); // Response validation
         const activityResults: any[] = JSON.parse(payload.body); // Response conversion
         return activityResults;
-      }) as Promise<IActivity[]>;
+      }) as IActivity[];
   }
 
-  public endActivities(activities: IActivity[]) {
+  public async endActivities(activities: IActivity[]): Promise<any[]> {
+    const promises: Promise<any>[] = [];
     activities.forEach((activity: IActivity) => {
-      this.endActivity(activity.id);
+        promises.push(this.endActivity(activity.id));
     });
+
+    return await Promise.all(promises);
   }
 
   /**
    *  Closes Activities based on the provided id
    * @param id - the activity id
    */
-  private endActivity(id: string): Promise<any> {
+  public async endActivity(id: string): Promise<any> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: any = {
       FunctionName: config.functions.activities.name,
@@ -74,11 +78,14 @@ class ActivityService {
       }),
     };
     console.log("Ending activity: ", id);
-    return this.lambdaClient.invoke(invokeParams)
+    return await this.lambdaClient.invoke(invokeParams)
       .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
         const payload: any = validateInvocationResponse(response); // Response validation
         const activityResults: any[] = JSON.parse(payload.body); // Response conversion
         return activityResults;
+      }).catch((error) => {
+        console.log(`endActivity encountered a failure while ending Activity ${id}: `, error);
+        throw new HTTPError(500, `Ending activities encountered failures`);
       });
   }
 

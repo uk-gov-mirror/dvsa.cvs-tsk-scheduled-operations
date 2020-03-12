@@ -4,6 +4,10 @@ import {CleanupService} from "../../src/services/CleanupService";
 import {Configuration} from "../../src/utils/Configuration";
 
 describe("Handler", () => {
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   process.env.SECRET_NAME = "something";
   // @ts-ignore
   const ctx: Context = null;

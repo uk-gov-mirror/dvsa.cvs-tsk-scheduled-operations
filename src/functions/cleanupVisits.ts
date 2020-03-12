@@ -1,7 +1,7 @@
 import {CleanupService} from "../services/CleanupService";
 import HTTPError from "../models/HTTPError";
 import HTTPResponse from "../models/HTTPResponse";
-import {ISubSeg} from "../models/ISubSeg";
+import {ISubSeg} from "../models";
 // @ts-ignore
 import { NotifyClient } from "notifications-node-client";
 import {NotificationService} from "../services/NotificationService";

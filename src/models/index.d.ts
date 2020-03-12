@@ -106,4 +106,10 @@ interface IConfig {
   functions: any
 }
 
+export interface ISubSeg {
+  addError(error: any): void;
+  close: () => void;
+}
+
+
 export { IActivityParams, IActivity, IInvokeConfig, IFunctionEvent, INotifyConfig, ISecretConfig, ITesterDetails, IConfig };

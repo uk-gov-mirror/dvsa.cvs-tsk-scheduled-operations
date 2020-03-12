@@ -4,6 +4,7 @@ import HTTPResponse from "../../src/models/HTTPResponse";
 import HTTPError from "../../src/models/HTTPError";
 import {wrapLambdaResponse} from "../util/responseUtils";
 import activitiesResponse from "../resources/activities-response.json"
+import testActivities from "../resources/testActivities.json";
 
 describe("Activity Service", () => {
   const realDate = Date;
@@ -77,6 +78,41 @@ describe("Activity Service", () => {
     });
   });
 
+  describe("endActivities", () => {
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      jest.resetModuleRegistry();
+    });
+
+
+    describe("when the endActivity function throws an error", () => {
+      it("endActivities should throw that error upward", async () => {
+        jest.spyOn(ActivityService.prototype, "endActivity").mockRejectedValue(new HTTPError(418, "bad things"));
+        const lambdaSvcMock = jest.fn();
+        const svc = new ActivityService(new lambdaSvcMock());
+        expect.assertions(2);
+        try {
+          await svc.endActivities([testActivities[0]])
+        } catch (e) {
+          expect(e.statusCode).toEqual(418);
+          expect(e.body).toEqual("bad things");
+        }
+      });
+    });
+
+    describe("when no errors are thrown by endActivity service calls", () => {
+      it("returns array of results", async () => {
+        jest.spyOn(ActivityService.prototype, "endActivity").mockResolvedValue("looks good");
+        const lambdaSvcMock = jest.fn();
+        const svc = new ActivityService(new lambdaSvcMock());
+        expect.assertions(2);
+
+        const output: any[] = await svc.endActivities(testActivities);
+        expect(output).toHaveLength(testActivities.length);
+        expect(output.every(i => i === "looks good")).toBeTruthy();
+      });
+    });
+  });
 
 
   const setupDateMock = (dateString: string) => {

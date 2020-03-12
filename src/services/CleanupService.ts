@@ -31,46 +31,50 @@ export class CleanupService {
    *
    */
   public async cleanupVisits(): Promise<any> {
-    // Get all activities from last period of interest
-    console.log("Getting activities");
-    const allActivities: IActivity[] = await this.activityService.getRecentActivities();
-    console.log("Got Activities: ", allActivities);
-    // Get stale open visits
-    const openVisits: IActivity[] = getStaleOpenVisits(allActivities);
-    console.log("Open Visits: ", openVisits);
-    // Get list of staffIDs from open visits
-    const openVisitStaffIds: string[] = getTesterStaffIds(openVisits);
-    console.log("Open Visit Staff Ids", openVisitStaffIds);
-    // Get last activity for each staffId
-    const mostRecentActivities: Map<string, IActivity> = getMostRecentActivityByTesterStaffId(allActivities, openVisitStaffIds);
-    console.log("Most Recent Activities by Staff Id", mostRecentActivities);
-    // Get all Test Results By Staff Id for open visits
-    console.log("Getting Test Results");
-    const testResults: Map<string, ITestResult[]> = await this.testResultsService.getRecentTestResultsByTesterStaffId(openVisitStaffIds);
-    console.log("Test Result: ", testResults);
-    // Get the most recent Test Result logged by the testers
-    const mostRecentTestResults: Map<string, ITestResult> = getMostRecentTestResultByTesterStaffId(testResults, openVisitStaffIds);
-    console.log("Most recent test result: ", mostRecentTestResults);
-    // Get the time of the most recent logged event, of either type taken by each tester
-    const lastActionTimes: Map<string, Date> = getLastEventTimeByTesterStaffId(mostRecentActivities, mostRecentTestResults, openVisitStaffIds);
-    console.log("last Action by staff Id", lastActionTimes);
-    // Get list of staff visits to close;
-    const testersToCloseVisits: string[] = getActionableStaffIdsByTime(lastActionTimes,TIMES.TERMINATION_TIME);
-    console.log("testers to Close visits: ", testersToCloseVisits);
-    // Filter out closable visits
-    const filteredLastActions: Map<string, Date> = removeFromMap(lastActionTimes, testersToCloseVisits);
-    // Get list of staff members to notify;
-    const testersToNotify: string[] = getActionableStaffIdsByTime(filteredLastActions, TIMES.NOTIFICATION_TIME);
-    console.log("Testers to Notify: ", testersToNotify);
-    // Send notifications
-    const userDetails: ITesterDetails[] = getTesterDetailsFromActivities(openVisits, testersToNotify);
-    console.log("user details for notification: ", userDetails);
-    this.notificationService.sendVisitExpiryNotifications(userDetails);
+    try {
+      // Get all activities from last period of interest
+      console.log("Getting activities");
+      const allActivities: IActivity[] = await this.activityService.getRecentActivities();
+      console.log("Got Activities: ", allActivities);
+      // Get stale open visits
+      const openVisits: IActivity[] = getStaleOpenVisits(allActivities);
+      console.log("Open Visits: ", openVisits);
+      // Get list of staffIDs from open visits
+      const openVisitStaffIds: string[] = getTesterStaffIds(openVisits);
+      console.log("Open Visit Staff Ids", openVisitStaffIds);
+      // Get last activity for each staffId
+      const mostRecentActivities: Map<string, IActivity> = getMostRecentActivityByTesterStaffId(allActivities, openVisitStaffIds);
+      console.log("Most Recent Activities by Staff Id", mostRecentActivities);
+      // Get all Test Results By Staff Id for open visits
+      console.log("Getting Test Results");
+      const testResults: Map<string, ITestResult[]> = await this.testResultsService.getRecentTestResultsByTesterStaffId(openVisitStaffIds);
+      console.log("Test Result: ", testResults);
+      // Get the most recent Test Result logged by the testers
+      const mostRecentTestResults: Map<string, ITestResult> = getMostRecentTestResultByTesterStaffId(testResults, openVisitStaffIds);
+      console.log("Most recent test result: ", mostRecentTestResults);
+      // Get the time of the most recent logged event, of either type taken by each tester
+      const lastActionTimes: Map<string, Date> = getLastEventTimeByTesterStaffId(mostRecentActivities, mostRecentTestResults, openVisitStaffIds);
+      console.log("last Action by staff Id", lastActionTimes);
+      // Get list of staff visits to close;
+      const testersToCloseVisits: string[] = getActionableStaffIdsByTime(lastActionTimes, TIMES.TERMINATION_TIME);
+      console.log("testers to Close visits: ", testersToCloseVisits);
+      // Filter out closable visits
+      const filteredLastActions: Map<string, Date> = removeFromMap(lastActionTimes, testersToCloseVisits);
+      // Get list of staff members to notify;
+      const testersToNotify: string[] = getActionableStaffIdsByTime(filteredLastActions, TIMES.NOTIFICATION_TIME);
+      console.log("Testers to Notify: ", testersToNotify);
+      // Send notifications
+      const userDetails: ITesterDetails[] = getTesterDetailsFromActivities(openVisits, testersToNotify);
+      console.log("user details for notification: ", userDetails);
+      this.notificationService.sendVisitExpiryNotifications(userDetails);
 
-    // Close visits
-    const closingActivityDetails = filterActivitiesByStaffId(openVisits, testersToCloseVisits);
-    this.activityService.endActivities(closingActivityDetails);
+      // Close visits
+      const closingActivityDetails = filterActivitiesByStaffId(openVisits, testersToCloseVisits);
+      await this.activityService.endActivities(closingActivityDetails);
 
-    return Promise.resolve();
+      return Promise.resolve();
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 }
