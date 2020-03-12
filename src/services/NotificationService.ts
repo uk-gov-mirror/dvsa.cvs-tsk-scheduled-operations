@@ -25,7 +25,7 @@ class NotificationService {
         }
       };
       console.log("Sending visit expiry email to: ", email);
-      // this.sendNotification(params);
+      this.sendNotification(params);
     });
   }
 

@@ -20,7 +20,7 @@ if (process.env._X_AMZN_TRACE_ID) {
 }
 /* tslint:enable */
 
-export const cleanupVisit = async () => {
+export const cleanupVisits = async () => {
   let subseg: ISubSeg | null = null;
   if (process.env._X_AMZN_TRACE_ID) {
     const segment = AWS.getSegment();

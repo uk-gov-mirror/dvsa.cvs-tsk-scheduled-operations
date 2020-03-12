@@ -26,7 +26,7 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
   // Finding an appropriate λ matching the request
   const config: Configuration = Configuration.getInstance();
   const functions: IFunctionEvent[] = config.getFunctions();
-  const serverlessConfig: any = config.getConfig().serverless;
+  // const serverlessConfig: any = config.getConfig().serverless;
 
   let matchingLambdaEvents: IFunctionEvent[] = functions.filter((fn) => {
       // Find λ with matching event name
@@ -38,14 +38,7 @@ const handler: Handler = async (event: any, context: Context, callback: Callback
     const lambdaEvent: IFunctionEvent = matchingLambdaEvents[0];
     const lambdaFn: Handler = lambdaEvent.function;
 
-    const localPath: Path = new Path(lambdaEvent.path);
-    const remotePath: Path = new Path(`${serverlessConfig.basePath}${lambdaEvent.path}`); // Remote paths also have environment
-
-    const lambdaPathParams: any = (localPath.test(event.path) || remotePath.test(event.path));
-
-    Object.assign(event, { pathParameters: lambdaPathParams });
-
-    console.log(`${event.path} -> λ ${lambdaEvent.name}`);
+    console.log(`invoking ${lambdaEvent.name} function `);
 
     // Explicit conversion because typescript can't figure it out
     return lambdaFn(event, context, callback) as Promise<APIGatewayProxyResult>;

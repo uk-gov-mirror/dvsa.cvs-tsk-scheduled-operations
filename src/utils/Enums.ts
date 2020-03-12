@@ -10,7 +10,7 @@ export enum HTTPRESPONSE {
 export enum ERRORS {
   NO_BRANCH = "'BRANCH' environment variable not found",
   NOTIFY_CONFIG_NOT_DEFINED = "The Notify config is not defined in the config file.",
-  SECRET_ENV_VAR_NOT_SET = "SECRET_NAME environment variablenot set.",
+  SECRET_ENV_VAR_NOT_SET = "SECRET_NAME environment variable not set.",
 
 }
 
