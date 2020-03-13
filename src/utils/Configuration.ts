@@ -85,7 +85,7 @@ class Configuration {
       throw new Error(ERRORS.NOTIFY_CONFIG_NOT_DEFINED);
     }
     if (!this.config.notify.api_key) {
-      await this.setSecrets();
+      this.config.notify = (await this.setSecrets()).notify;
     }
 
     return this.config.notify;
@@ -109,8 +109,8 @@ class Configuration {
   /**
    * Reads the secret yaml file from SecretManager or local file.
    */
-  private async setSecrets(): Promise<IConfig> {
-    let secret: IConfig;
+  private async setSecrets(): Promise<ISecretConfig> {
+    let secret: ISecretConfig;
     if (process.env.SECRET_NAME) {
       const req: GetSecretValueRequest = {
         SecretId: process.env.SECRET_NAME
