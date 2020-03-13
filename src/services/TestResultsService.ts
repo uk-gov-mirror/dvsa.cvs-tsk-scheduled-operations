@@ -4,7 +4,7 @@ import { AWSError, Lambda } from "aws-sdk";
 import { LambdaService } from "./LambdaService";
 import { Configuration } from "../utils/Configuration";
 import {validateInvocationResponse} from "../utils/validateInvocationResponse";
-import dateFns from "date-fns";
+import {subHours} from "date-fns";
 import {TIMES} from "../utils/Enums";
 
 class TestResultsService {
@@ -22,7 +22,7 @@ class TestResultsService {
     testerStaffIds.forEach(async (testerStaffId) => {
       const params = {
         testerStaffId,
-        fromDateTime: dateFns.subHours(new Date(), TIMES.TERMINATION_TIME + 1)
+        fromDateTime: subHours(new Date(), TIMES.TERMINATION_TIME + 1)
       };
       const result = await this.getTestResults(params) as ITestResult[];
       results.set(testerStaffId, result);
