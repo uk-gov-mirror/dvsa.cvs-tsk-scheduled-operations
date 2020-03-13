@@ -27,6 +27,7 @@ class TestResultsService {
       const result = await this.getTestResults(params) as ITestResult[];
       results.set(testerStaffId, result);
     });
+    return results;
   }
 
   /**

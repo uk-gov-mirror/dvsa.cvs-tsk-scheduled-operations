@@ -8,7 +8,7 @@
     "testStationType": "atf",
     "testerName": "Sam",
     "testerStaffId": "abc123",
-    "testerEmailAddress": "thing@string.com",
+    "testerEmail": "thing@string.com",
     "startTime": "2020-03-05T12:29:45.938Z",
     "endTime": "2020-03-05T13:29:45.938Z"
   },
@@ -21,7 +21,7 @@
     "testStationType": "atf",
     "testerName": "latest",
     "testerStaffId": "abc123",
-    "testerEmailAddress": "thing@string.com",
+    "testerEmail": "thing@string.com",
     "startTime": "2020-03-05T13:39:45.938Z",
     "endTime": "2020-03-05T13:40:45.938Z"
   },
@@ -34,7 +34,7 @@
     "testStationType": "atf",
     "testerName": "Sam",
     "testerStaffId": "abc123",
-    "testerEmailAddress": "thing@string.com",
+    "testerEmail": "thing@string.com",
     "startTime": "2020-03-04T12:29:45.938Z",
     "endTime": "2020-03-04T13:29:45.938Z"
   },
@@ -47,7 +47,7 @@
     "testStationType": "atf",
     "testerName": "Sam",
     "testerStaffId": "def456",
-    "testerEmailAddress": "thing@string.com",
+    "testerEmail": "thing@string.com",
     "startTime": "2020-04-04T12:29:45.938Z",
     "endTime": "2020-04-04T13:29:45.938Z"
   },
@@ -60,7 +60,7 @@
     "testStationType": "atf",
     "testerName": "Sam",
     "testerStaffId": "def456",
-    "testerEmailAddress": "thing2@string.com",
+    "testerEmail": "thing2@string.com",
     "startTime": "2020-04-04T12:29:45.938Z",
     "endTime": "2020-04-04T13:29:45.938Z"
   }

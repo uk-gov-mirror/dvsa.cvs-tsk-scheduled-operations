@@ -13,6 +13,7 @@ import testActivities from "../resources/testActivities.json";
 import testResults from "../resources/testTestResults.json";
 import {cloneDeep} from "lodash";
 import {IActivity, ITesterDetails, ITestResult} from "../../src/models";
+import HTTPResponse from "../../src/models/HTTPResponse";
 
 describe("Activity Helper functions", ()=> {
   describe("getMostRecentActivityByTesterStaffId", () => {
@@ -45,17 +46,28 @@ describe("Activity Helper functions", ()=> {
 
   describe("getStaleOpenVisits", () => {
     describe("when passed an array of activities", () => {
-      it(`only returns visit activities, with no endTime, with a startTime more than NOTIFICATION_TIME hours old`, () => {
-        const activities: IActivity[] = cloneDeep(testActivities);
-        activities[0].startTime = new Date().toISOString();
-        expect(getStaleOpenVisits(activities)).toHaveLength(0);
-        activities[0].activityType = "visit";
-        expect(getStaleOpenVisits(activities)).toHaveLength(0);
-        activities[0].endTime = null;
-        expect(getStaleOpenVisits(activities)).toHaveLength(0);
-        activities[0].startTime = "2020-03-05T13:29:45.938Z";
-        expect(getStaleOpenVisits(activities)).toHaveLength(1);
-      });
+      describe("and a visit with no end time, and an old start time is present", () => {
+        it(`only returns visit activities, with no endTime, with a startTime more than NOTIFICATION_TIME hours old`, () => {
+          const activities: IActivity[] = cloneDeep(testActivities);
+          activities[0].startTime = new Date().toISOString();
+          activities[0].activityType = "visit";
+          activities[0].endTime = null;
+          activities[0].startTime = "2020-03-05T13:29:45.938Z";
+          expect(getStaleOpenVisits(activities)).toHaveLength(1);
+        });
+      })
+      describe("and no stale visits are present", () => {
+        it(`throws an error to stop the process and save on compute time`, () => {
+          const endedActivities = testActivities.filter(a => a.endTime);
+          expect.assertions(2);
+          try {
+            getStaleOpenVisits(endedActivities)
+          } catch (e) {
+            expect(e.statusCode).toEqual(404);
+            expect(e.body).toEqual(JSON.stringify("No stale activities found. Nothing to act on."));
+          }
+        });
+      })
     });
   });
 
@@ -130,7 +142,7 @@ describe("Activity Helper functions", ()=> {
           const activities: IActivity[] = cloneDeep(testActivities);
           const output: ITesterDetails[] = getTesterDetailsFromActivities(activities, [activities[0].testerStaffId]);
           expect(output).toHaveLength(1);
-          expect(output[0].email).toEqual(activities[0].testerEmailAddress);
+          expect(output[0].email).toEqual(activities[0].testerEmail);
         });
       });
 

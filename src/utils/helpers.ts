@@ -2,13 +2,18 @@ import {IActivity, ITesterDetails, ITestResult} from "../models";
 import {uniq, maxBy} from "lodash";
 import {TIMES} from "./Enums";
 import {subHours, isBefore, isAfter} from "date-fns";
+import HTTPResponse from "../models/HTTPResponse";
 
 export const getStaleOpenVisits = (openVisits: IActivity[]): IActivity[] => {
   const warningTime = subHours(new Date(), TIMES.NOTIFICATION_TIME);
-  return openVisits
+  const staleVisits = openVisits
     .filter((a) => a.activityType === "visit")
     .filter((a) => a.endTime === null)
     .filter((a) => isBefore(new Date(a.startTime), warningTime));
+  if (staleVisits.length === 0) {
+    throw new HTTPResponse(404, "No stale activities found. Nothing to act on.")
+  }
+  return staleVisits;
 };
 
 export const getTesterStaffIds = (activities: IActivity[]): string[] => {
@@ -27,6 +32,7 @@ export const getMostRecentActivityByTesterStaffId = (activities: IActivity[], st
 export const getMostRecentTestResultByTesterStaffId = (testResults: Map<string,ITestResult[]>, staffIds: string[]): Map<string, ITestResult> => {
   const mostRecentTestResults = new Map<string, ITestResult>();
   staffIds.forEach((id) => {
+
     const mostRecentTestResult = maxBy(testResults.get(id), getTestResultEndDateTime) as ITestResult;
     mostRecentTestResults.set(id, mostRecentTestResult);
   });
@@ -77,7 +83,7 @@ export const removeFromMap = (map: Map<string, any>, removeIds: string[]): Map<s
 export const getTesterDetailsFromActivities = (activities: IActivity[], staffIds: string[]): ITesterDetails[] => {
   const details: ITesterDetails[] = [];
   staffIds.forEach((id) => {
-    const email = activities?.filter((a) => a.testerStaffId === id)[0]?.testerEmailAddress;
+    const email = activities?.filter((a) => a.testerStaffId === id)[0]?.testerEmail;
     if (email) {details.push({email});}
   });
   return details;

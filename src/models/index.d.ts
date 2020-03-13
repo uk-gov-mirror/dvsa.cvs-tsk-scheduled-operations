@@ -17,7 +17,7 @@ interface IActivity {
   testStationEmail?: string;
   testStationType?: string;
   testerName: string;
-  testerEmailAddress: string;
+  testerEmail: string;
   testerStaffId: string;
   startTime: string;
   endTime: string | null;
