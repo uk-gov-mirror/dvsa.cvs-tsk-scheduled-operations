@@ -44,7 +44,13 @@ class ActivityService {
     };
     return await this.lambdaClient.invoke(invokeParams)
       .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
-        const payload: any = validateInvocationResponse(response); // Response validation
+        let payload: any;
+        try{
+           payload = validateInvocationResponse(response); // Response validation
+        } catch (e) {
+          console.log("No recent activites found");
+          throw (new HTTPError(404, "No recent activities found. Nothing to act on."))
+        }
         const activityResults: any[] = JSON.parse(payload.body); // Response conversion
         return activityResults;
       }) as IActivity[];
