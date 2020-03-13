@@ -59,7 +59,7 @@ describe("Activity Service", () => {
         return svc.getActivities({fromStartTime: "2020-02-12"})
           .catch((error: HTTPError) => {
             expect(error.statusCode).toEqual(404);
-            expect(error.body).toEqual("No resources match the search criteria");
+            expect(error.body).toEqual("No recent activities found. Nothing to act on.");
           });
       });
     });
