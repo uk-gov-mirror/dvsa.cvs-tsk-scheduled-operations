@@ -55,7 +55,7 @@ describe("Activity Helper functions", ()=> {
           activities[0].startTime = "2020-03-05T13:29:45.938Z";
           expect(getStaleOpenVisits(activities)).toHaveLength(1);
         });
-      })
+      });
       describe("and no stale visits are present", () => {
         it(`throws an error to stop the process and save on compute time`, () => {
           const endedActivities = testActivities.filter(a => a.endTime);

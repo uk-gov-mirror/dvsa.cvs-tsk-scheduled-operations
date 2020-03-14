@@ -22,7 +22,8 @@ class TestResultsService {
     testerStaffIds.forEach(async (testerStaffId) => {
       const params = {
         testerStaffId,
-        fromDateTime: subHours(new Date(), TIMES.TERMINATION_TIME + 1)
+        fromDateTime: subHours(new Date(), TIMES.TERMINATION_TIME + 1).toISOString(),
+        toDateTime: new Date().toISOString()
       };
       const result = await this.getTestResults(params) as ITestResult[];
       results.set(testerStaffId, result);
