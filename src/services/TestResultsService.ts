@@ -19,15 +19,17 @@ class TestResultsService {
   public async getRecentTestResultsByTesterStaffId(testerStaffIds: string[]): Promise<Map<string, ITestResult[]>> {
     const results = new Map<string, ITestResult[]>();
     // Get results from the period of interest, plus one hour
-    testerStaffIds.forEach(async (testerStaffId) => {
+    for (const testerStaffId of testerStaffIds) {
       const params = {
         testerStaffId,
-        fromDateTime: subHours(new Date(), TIMES.TERMINATION_TIME + 1).toISOString(),
+        fromDateTime: subHours(Date.now(), TIMES.TERMINATION_TIME + 1).toISOString(),
         toDateTime: new Date().toISOString()
       };
+      console.log("Test Result query params: ", params);
       const result = await this.getTestResults(params) as ITestResult[];
+      console.log("Result: ", result);
       results.set(testerStaffId, result);
-    });
+    }
     return results;
   }
 
@@ -35,7 +37,7 @@ class TestResultsService {
    * Retrieves test results based on the provided parameters
    * @param params - getTestResultsByTesterStaffId query parameters
    */
-  getTestResults(params: any): Promise<any> {
+  async getTestResults(params: any): Promise<ITestResult[]> {
     const config: IInvokeConfig = this.config.getInvokeConfig();
     const invokeParams: any = {
       FunctionName: config.functions.testResults.name,
@@ -47,13 +49,12 @@ class TestResultsService {
         queryStringParameters: params
       }),
     };
-    return this.lambdaClient.invoke(invokeParams)
+    return await this.lambdaClient.invoke(invokeParams)
       .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
         console.log("Raw Test Results response: ", response);
         const payload: any = validateInvocationResponse(response); // Response validation
         console.log("After validation: ", payload);
         return JSON.parse(payload.body); // Response conversion
-
       });
   }
 }
