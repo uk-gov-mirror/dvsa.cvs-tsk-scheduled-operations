@@ -2,6 +2,7 @@
 import { NotifyClient } from "notifications-node-client";
 import {TEMPLATE_IDS} from "../utils/Enums";
 import {ITesterDetails} from "../models";
+import HTTPError from "../models/HTTPError";
 
 /**
  * Service class for Certificate Notifications
@@ -18,35 +19,19 @@ class NotificationService {
    * @param userDetails
    */
   public sendVisitExpiryNotifications(userDetails: ITesterDetails[]) {
-    const emails: Promise<any>[] = [];
-    userDetails.forEach(async ({email}) => {
-      const params = {
-        email,
-        personalisation: {
-        }
-      };
-      console.log("Sending visit expiry email to: ", email);
-      emails.push(this.sendNotification(params));
-    });
-    return Promise.all(emails)
-      .catch((error) => {
-        console.log("Failed to send email: ", error);
-      });
-  }
+    const sendEmailPromise = [];
+    for (const detail of userDetails) {
+      const sendEmail = this.notifyClient.sendEmail(TEMPLATE_IDS.TESTER_VISIT_EXPIRY, detail.email);
+      sendEmailPromise.push(sendEmail);
+    }
 
-  /**
-   * Sending email according to the given params
-   * @param params - personalization details and email
-   */
-  private sendNotification(params: any) {
-    return this.notifyClient.sendEmail(TEMPLATE_IDS.TESTER_VISIT_EXPIRY, params.email, params.personalisation)
+    return Promise.all(sendEmailPromise)
       .then((response: any) => {
         console.log("Response from Notify Client: ", response);
         return response;
-      })
-      .catch((err: any) => {
-        console.error(err);
-        throw err;
+      }).catch((error) => {
+        console.error(error);
+        throw new HTTPError(error.statusCode, error.message);
       });
   }
 }

@@ -1,10 +1,10 @@
 import {ActivityService} from "../../src/services/ActivityService";
 import {LambdaService} from "../../src/services/LambdaService";
-import HTTPResponse from "../../src/models/HTTPResponse";
 import HTTPError from "../../src/models/HTTPError";
 import {wrapLambdaResponse} from "../util/responseUtils";
 import activitiesResponse from "../resources/activities-response.json"
 import testActivities from "../resources/testActivities.json";
+import dateMock from "../util/dateMockUtils";
 
 describe("Activity Service", () => {
   const realDate = Date;
@@ -25,7 +25,7 @@ describe("Activity Service", () => {
   describe("getRecentActivities",  () => {
     it("is invoking getActivities with correct param", async () => {
       // Param  should be TIMES.TERMINATION_TIME+1 before "now"
-      setupDateMock('2019-05-14T11:01:58.135Z');
+      dateMock.setupDateMock('2019-05-14T11:01:58.135Z');
       const expectedTime = '2019-05-14T06:01:58.135Z';
       const getActivitiesMock = jest.fn();
       jest.spyOn(ActivityService.prototype,"getActivities").mockImplementation(getActivitiesMock);
@@ -34,7 +34,7 @@ describe("Activity Service", () => {
       await svc.getRecentActivities();
       expect(getActivitiesMock.mock.calls[0][0]).toEqual({fromStartTime: expectedTime});
 
-      restoreDateMock();
+      dateMock.restoreDateMock();
     });
   });
 
@@ -113,24 +113,4 @@ describe("Activity Service", () => {
       });
     });
   });
-
-
-  const setupDateMock = (dateString: string) => {
-    const currentDate = new Date(dateString);
-    // @ts-ignore
-    global.Date = class extends Date {
-      constructor(...args: any) {
-        if (args.length > 0) {
-          // @ts-ignore
-          return super(...args);
-        }
-
-        return currentDate;
-      }
-    };
-  };
-  const restoreDateMock = () => {
-    global.Date = realDate;
-  };
-
 });
