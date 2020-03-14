@@ -26,7 +26,7 @@ describe("Activity Service", () => {
     it("is invoking getActivities with correct param", async () => {
       // Param  should be TIMES.TERMINATION_TIME+1 before "now"
       setupDateMock('2019-05-14T11:01:58.135Z');
-      const expectedTime = '2019-05-14T05:01:58.135Z';
+      const expectedTime = '2019-05-14T06:01:58.135Z';
       const getActivitiesMock = jest.fn();
       jest.spyOn(ActivityService.prototype,"getActivities").mockImplementation(getActivitiesMock);
 

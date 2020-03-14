@@ -52,9 +52,17 @@ class TestResultsService {
     return await this.lambdaClient.invoke(invokeParams)
       .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
         console.log("Raw Test Results response: ", response);
-        const payload: any = validateInvocationResponse(response); // Response validation
+        let payload: any = undefined;
+        try {
+          payload = validateInvocationResponse(response); // Response validation
+        } catch (e) {
+          // Doesn't matter if they don't find any tech records
+          if (e.statusCode != 404) {
+            throw e;
+          }
+        }
         console.log("After validation: ", payload);
-        return JSON.parse(payload.body); // Response conversion
+        return payload ? JSON.parse(payload.body) : undefined; // Response conversion
       });
   }
 }

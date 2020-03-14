@@ -18,6 +18,7 @@ class NotificationService {
    * @param userDetails
    */
   public sendVisitExpiryNotifications(userDetails: ITesterDetails[]) {
+    const emails: Promise<any>[] = [];
     userDetails.forEach(async ({email}) => {
       const params = {
         email,
@@ -25,8 +26,12 @@ class NotificationService {
         }
       };
       console.log("Sending visit expiry email to: ", email);
-      this.sendNotification(params);
+      emails.push(this.sendNotification(params));
     });
+    return Promise.all(emails)
+      .catch((error) => {
+        console.log("Failed to send email: ", error);
+      });
   }
 
   /**
@@ -36,6 +41,7 @@ class NotificationService {
   private sendNotification(params: any) {
     return this.notifyClient.sendEmail(TEMPLATE_IDS.TESTER_VISIT_EXPIRY, params.email, params.personalisation)
       .then((response: any) => {
+        console.log("Response from Notify Client: ", response);
         return response;
       })
       .catch((err: any) => {
