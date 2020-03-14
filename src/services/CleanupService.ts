@@ -66,7 +66,7 @@ export class CleanupService {
       // Send notifications
       const userDetails: ITesterDetails[] = getTesterDetailsFromActivities(openVisits, testersToNotify);
       console.log("user details for notification: ", userDetails);
-      this.notificationService.sendVisitExpiryNotifications(userDetails);
+      await this.notificationService.sendVisitExpiryNotifications(userDetails);
 
       // Close visits
       const closingActivityDetails = filterActivitiesByStaffId(openVisits, testersToCloseVisits);
