@@ -52,12 +52,12 @@ class TestResultsService {
     return await this.lambdaClient.invoke(invokeParams)
       .then((response: PromiseResult<Lambda.Types.InvocationResponse, AWSError>) => {
         console.log("Raw Test Results response: ", response);
-        let payload: any = undefined;
+        let payload: any;
         try {
           payload = validateInvocationResponse(response); // Response validation
         } catch (e) {
           // Doesn't matter if they don't find any tech records
-          if (e.statusCode != 404) {
+          if (e.statusCode !== 404) {
             throw e;
           }
         }

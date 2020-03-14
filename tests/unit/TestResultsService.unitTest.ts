@@ -23,7 +23,7 @@ describe("Test Results Service", () => {
         const getTestResultsSpy = jest.spyOn(TestResultsService.prototype, "getTestResults")
         getTestResultsSpy.mockResolvedValue(testResults);
         const svc = new TestResultsService(new (jest.fn()));
-        let output: Map<string, ITestResult[]> = await svc.getRecentTestResultsByTesterStaffId(["abc", "123"]);
+        const output: Map<string, ITestResult[]> = await svc.getRecentTestResultsByTesterStaffId(["abc", "123"]);
         expect(getTestResultsSpy.mock.calls).toHaveLength(2);
         expect(getTestResultsSpy.mock.calls[0][0].testerStaffId).toEqual("abc");
         expect(getTestResultsSpy.mock.calls[0][0].toDateTime.split(".")[0]).toEqual(new Date().toISOString().split(".")[0]);
