@@ -20,7 +20,7 @@ class ActivityService {
   public async getRecentActivities(): Promise<IActivity[]> {
     // Get unclosed Visit activities from the last period of interest
     const params = {
-      fromStartTime: subHours(new Date(), TIMES.TERMINATION_TIME + 1).toISOString(),
+      fromStartTime: subHours(new Date(), TIMES.TERMINATION_TIME + TIMES.ADDITIONAL_WINDOW).toISOString(),
     };
 
     return await this.getActivities(params);
