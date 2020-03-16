@@ -32,7 +32,6 @@ export class CleanupService {
    *
    */
   public async cleanupVisits(): Promise<any> {
-    try {
       // Get all activities from last period of interest
       console.log("Getting activities");
       const allActivities: IActivity[] = await this.activityService.getRecentActivities();
@@ -77,9 +76,6 @@ export class CleanupService {
       const closingActivityDetails = filterActivitiesByStaffId(openVisits, testersToCloseVisits);
       await this.activityService.endActivities(closingActivityDetails);
 
-      return Promise.resolve();
-    } catch (e) {
-      return Promise.reject(e);
-    }
+      return;
   }
 }

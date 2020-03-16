@@ -119,7 +119,7 @@ class Configuration {
       try {
         secret = await safeLoad(resp.SecretString as string);
       } catch (e) {
-        throw new Error("SecretString is empty.");
+        throw new Error(ERRORS.SECRET_STRING_EMPTY);
       }
     } else {
       console.warn(ERRORS.SECRET_ENV_VAR_NOT_SET);

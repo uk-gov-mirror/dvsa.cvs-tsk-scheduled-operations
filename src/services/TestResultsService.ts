@@ -26,7 +26,7 @@ class TestResultsService {
         toDateTime: new Date().toISOString()
       };
       console.log("Test Result query params: ", params);
-      const result = await this.getTestResults(params) as ITestResult[];
+      const result: ITestResult[] = await this.getTestResults(params);
       console.log("Result: ", result);
       results.set(testerStaffId, result);
     }
