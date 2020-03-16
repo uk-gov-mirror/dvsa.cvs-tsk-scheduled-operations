@@ -5,14 +5,17 @@ export enum TIMES {
 }
 
 export enum HTTPRESPONSE {
-  NOT_VALID_JSON = "Invalid JSON"
+  NOT_VALID_JSON = "Invalid JSON",
+  NOTHING_TO_DO = "No stale visits found. Nothing to act on.",
+  SUCCESS = "Cleanup Success"
 }
 
 export enum ERRORS {
   NO_BRANCH = "'BRANCH' environment variable not found",
   NOTIFY_CONFIG_NOT_DEFINED = "The Notify config is not defined in the config file.",
   SECRET_ENV_VAR_NOT_SET = "SECRET_NAME environment variable not set.",
-
+  GET_ACIVITY_FAILURE = "Get Activities encountered errors",
+  END_ACIVITY_FAILURE = "Ending activities encountered failures"
 }
 
 export enum TEMPLATE_IDS {

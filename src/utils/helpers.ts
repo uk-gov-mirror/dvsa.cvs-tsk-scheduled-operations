@@ -2,7 +2,6 @@ import {IActivity, ITesterDetails, ITestResult} from "../models";
 import {uniq, maxBy} from "lodash";
 import {TIMES} from "./Enums";
 import {subHours, isBefore, isAfter} from "date-fns";
-import HTTPResponse from "../models/HTTPResponse";
 
 export const getStaleOpenVisits = (openVisits: IActivity[]): IActivity[] => {
   const warningTime = subHours(new Date(), TIMES.NOTIFICATION_TIME);
@@ -10,9 +9,6 @@ export const getStaleOpenVisits = (openVisits: IActivity[]): IActivity[] => {
     .filter((a) => a.activityType === "visit")
     .filter((a) => a.endTime === null)
     .filter((a) => isBefore(new Date(a.startTime), warningTime));
-  if (staleVisits.length === 0) {
-    throw new HTTPResponse(404, "No stale activities found. Nothing to act on.")
-  }
   return staleVisits;
 };
 

@@ -6,6 +6,7 @@ import {ISubSeg} from "../models";
 import { NotifyClient } from "notifications-node-client";
 import {NotificationService} from "../services/NotificationService";
 import {Configuration} from "../utils/Configuration";
+import {HTTPRESPONSE} from "../utils/Enums";
 
 /* workaround AWSXRay.captureAWS(...) call obscures types provided by the AWS sdk.
 https://github.com/aws/aws-xray-sdk-node/issues/14
@@ -36,8 +37,8 @@ export const cleanupVisits = async () => {
 
   try {
     return cleanupService.cleanupVisits()
-      .then(() => {
-        return new HTTPResponse(201, "Cleanup Success");
+      .then((response = HTTPRESPONSE.SUCCESS) => {
+        return new HTTPResponse(201, response);
       })
       .catch((error) => {
         console.log("Error cleaning up visits", error);

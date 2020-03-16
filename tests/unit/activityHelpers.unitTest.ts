@@ -57,15 +57,11 @@ describe("Activity Helper functions", ()=> {
         });
       });
       describe("and no stale visits are present", () => {
-        it(`throws an error to stop the process and save on compute time`, () => {
+        it(`returns an empty array, and does not error`, () => {
           const endedActivities = testActivities.filter(a => a.endTime);
-          expect.assertions(2);
-          try {
-            getStaleOpenVisits(endedActivities)
-          } catch (e) {
-            expect(e.statusCode).toEqual(404);
-            expect(e.body).toEqual(JSON.stringify("No stale activities found. Nothing to act on."));
-          }
+          expect.assertions(1);
+          const output = getStaleOpenVisits(endedActivities);
+          expect(output).toEqual([]);
         });
       })
     });

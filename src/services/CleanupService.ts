@@ -12,8 +12,9 @@ import {
   removeFromMap
 } from "../utils/helpers";
 import {IActivity, ITesterDetails, ITestResult} from "../models";
-import {TIMES} from "../utils/Enums";
+import {HTTPRESPONSE, TIMES} from "../utils/Enums";
 import {NotificationService} from "./NotificationService";
+import HTTPResponse from "../models/HTTPResponse";
 
 
 export class CleanupService {
@@ -39,6 +40,10 @@ export class CleanupService {
       // Get stale open visits
       const openVisits: IActivity[] = getStaleOpenVisits(allActivities);
       console.log("Open Visits: ", openVisits);
+      if(openVisits.length === 0) {
+        return new HTTPResponse(200, HTTPRESPONSE.NOTHING_TO_DO);
+      }
+
       // Get list of staffIDs from open visits
       const openVisitStaffIds: string[] = getTesterStaffIds(openVisits);
       console.log("Open Visit Staff Ids", openVisitStaffIds);

@@ -3,7 +3,7 @@ import { AWSError, Lambda } from "aws-sdk";
 import { LambdaService } from "./LambdaService";
 import { Configuration } from "../utils/Configuration";
 import {subHours} from "date-fns";
-import {TIMES} from "../utils/Enums";
+import {ERRORS, TIMES} from "../utils/Enums";
 import {IActivity, IActivityParams, IInvokeConfig} from "../models";
 import {validateInvocationResponse} from "../utils/validateInvocationResponse";
 import HTTPError from "../models/HTTPError";
@@ -48,8 +48,11 @@ class ActivityService {
         try{
            payload = validateInvocationResponse(response); // Response validation
         } catch (e) {
-          console.log("No recent activites found");
-          throw (new HTTPError(404, "No recent activities found. Nothing to act on."))
+          if(e.statusCode === 404) {
+            return [];
+          }
+          console.log(ERRORS.GET_ACIVITY_FAILURE, e);
+          throw (new HTTPError(500, ERRORS.GET_ACIVITY_FAILURE))
         }
         const activityResults: any[] = JSON.parse(payload.body); // Response conversion
         return activityResults;
@@ -91,7 +94,7 @@ class ActivityService {
         return activityResults;
       }).catch((error) => {
         console.log(`endActivity encountered a failure while ending Activity ${id}: `, error);
-        throw new HTTPError(500, `Ending activities encountered failures`);
+        throw new HTTPError(500, ERRORS.END_ACIVITY_FAILURE);
       });
   }
 

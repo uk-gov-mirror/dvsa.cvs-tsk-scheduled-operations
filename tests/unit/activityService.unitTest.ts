@@ -46,7 +46,7 @@ describe("Activity Service", () => {
 
 
     context("when no data is returned from database", () => {
-      it("should throw error", () => {
+      it("should return an empty array, and no error", async () => {
         const invokeMock = jest.fn().mockResolvedValue(wrapLambdaResponse(JSON.stringify({
           body: "No resources match the search criteria",
           statusCode: 404
@@ -54,13 +54,10 @@ describe("Activity Service", () => {
         const lambdaSvcMock = jest.fn().mockImplementation(() => {return {invoke: invokeMock}}) ;
         const svc = new ActivityService(new lambdaSvcMock());
 
-        expect.assertions(2);
+        expect.assertions(1);
 
-        return svc.getActivities({fromStartTime: "2020-02-12"})
-          .catch((error: HTTPError) => {
-            expect(error.statusCode).toEqual(404);
-            expect(error.body).toEqual("No recent activities found. Nothing to act on.");
-          });
+        const output = await svc.getActivities({fromStartTime: "2020-02-12"});
+        expect(output).toEqual([]);
       });
     });
 
