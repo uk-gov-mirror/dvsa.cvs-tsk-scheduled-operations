@@ -70,12 +70,14 @@ export class CleanupService {
       // Send notifications
       const userDetails: ITesterDetails[] = getTesterDetailsFromActivities(openVisits, testersToNotify);
       console.log("user details for notification: ", userDetails);
-      await this.notificationService.sendVisitExpiryNotifications(userDetails);
-
       // Close visits
       const closingActivityDetails = filterActivitiesByStaffId(openVisits, testersToCloseVisits);
-      await this.activityService.endActivities(closingActivityDetails);
-
-      return;
+      try {
+        await this.notificationService.sendVisitExpiryNotifications(userDetails);
+        await this.activityService.endActivities(closingActivityDetails);
+        return Promise.resolve();
+      } catch(e) {
+        return Promise.reject()
+      }
   }
 }
