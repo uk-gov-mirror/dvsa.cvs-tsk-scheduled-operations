@@ -34,7 +34,7 @@ export interface ITestResult {
   testEndTimestamp: string;
   testStatus: string;
   testTypes: any[];
-  vehicleClass: VehicleClass;
+  vehicleClass: IVehicleClass;
   vin: string;
   vehicleSize?: string; // Mandatory for PSV only & not applicable to HGV and TRL
   testStationName: string;
@@ -60,7 +60,7 @@ export interface ITestResult {
   firstUseDate?: Date; // Used only for TRL
 }
 
-export interface VehicleClass {
+export interface IVehicleClass {
   code: string;
   description: string;
 }

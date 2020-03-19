@@ -77,7 +77,7 @@ export class CleanupService {
         await this.activityService.endActivities(closingActivityDetails);
         return Promise.resolve();
       } catch(e) {
-        return Promise.reject()
+        return Promise.reject();
       }
   }
 }
