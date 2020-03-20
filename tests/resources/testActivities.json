@@ -1,0 +1,67 @@
+[
+  {
+    "id": "asdkjkjggf",
+    "activityType": "visit",
+    "testStationName": "unimportant",
+    "testStationPNumber": "P11111",
+    "testStationEmail": "thing@string.com",
+    "testStationType": "atf",
+    "testerName": "Sam",
+    "testerStaffId": "abc123",
+    "testerEmail": "thing@string.com",
+    "startTime": "2020-03-05T12:29:45.938Z",
+    "endTime": "2020-03-05T13:29:45.938Z"
+  },
+  {
+    "id": "asdkjkjggg",
+    "activityType": "visit",
+    "testStationName": "unimportant",
+    "testStationPNumber": "P11111",
+    "testStationEmail": "thing@string.com",
+    "testStationType": "atf",
+    "testerName": "latest",
+    "testerStaffId": "abc123",
+    "testerEmail": "thing@string.com",
+    "startTime": "2020-03-05T13:39:45.938Z",
+    "endTime": "2020-03-05T13:40:45.938Z"
+  },
+  {
+    "id": "asdkjkjggh",
+    "activityType": "visit",
+    "testStationName": "unimportant",
+    "testStationPNumber": "P11111",
+    "testStationEmail": "thing@string.com",
+    "testStationType": "atf",
+    "testerName": "Sam",
+    "testerStaffId": "abc123",
+    "testerEmail": "thing@string.com",
+    "startTime": "2020-03-04T12:29:45.938Z",
+    "endTime": "2020-03-04T13:29:45.938Z"
+  },
+  {
+    "id": "asdkjkjggi",
+    "activityType": "visit",
+    "testStationName": "unimportant",
+    "testStationPNumber": "P11111",
+    "testStationEmail": "thing@string.com",
+    "testStationType": "atf",
+    "testerName": "Sam",
+    "testerStaffId": "def456",
+    "testerEmail": "thing@string.com",
+    "startTime": "2020-04-04T12:29:45.938Z",
+    "endTime": "2020-04-04T13:29:45.938Z"
+  },
+  {
+    "id": "jggf",
+    "activityType": "wait",
+    "testStationName": "unimportant",
+    "testStationPNumber": "P11111",
+    "testStationEmail": "thing@string.com",
+    "testStationType": "atf",
+    "testerName": "Sam",
+    "testerStaffId": "def456",
+    "testerEmail": "thing2@string.com",
+    "startTime": "2020-04-04T12:29:45.938Z",
+    "endTime": "2020-04-04T13:29:45.938Z"
+  }
+]
