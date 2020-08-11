@@ -7,6 +7,10 @@
     "type": "git",
     "url": "https://github.com/dvsa/cvs-tsk-scheduled-operations.git"
   },
+  "engines": {
+    "node": "10.18.1",
+    "npm": "5.6.0"
+  },
   "scripts": {
     "start": "BRANCH=local ./node_modules/serverless/bin/serverless offline start",
     "debug": "export SLS_DEBUG=* && BRANCH=local node --inspect ./node_modules/serverless/bin/serverless offline start",
