@@ -38,7 +38,7 @@ class ActivityService {
       LogType: "Tail",
       Payload: JSON.stringify({
         httpMethod: "GET",
-        path: "/activities/details",
+        path: "/activities/cleanup",
         queryStringParameters: params
       }),
     };
